@@ -4,6 +4,7 @@ import (
 	controller "campaign/Controller"
 	Models "campaign/Model"
 	"campaign/helper"
+	
 	"log"
 	"net/http"
 
@@ -44,8 +45,8 @@ func (h *userHandler) RegisterUser(c *gin.Context){
 
 		for _, e := range err.(validator.ValidationErrors){
 			errors = append(errors , e.Error())
+			
 		}
-		
 
 		errorsMessage := gin.H{"errors": errors}
 
@@ -66,7 +67,38 @@ func (h *userHandler) RegisterUser(c *gin.Context){
 	c.JSON(http.StatusOK, response)
 }
 
+func (h *userHandler) Login(c *gin.Context){
+
+	var input Models.LoginInput
+
+	err := c.ShouldBindJSON(&input)
+	if err != nil{
+		var errors []string
+
+		for _, e := range err.(validator.ValidationErrors){
+			errors = append(errors , e.Error())
+			
+		}
+
+		errorsMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse("login failed",http.StatusUnprocessableEntity, "error", errorsMessage)
+		c.JSON(http.StatusUnprocessableEntity,response)
+		return
+
+	}
+	loggedInUser,err := h.userService.Login(input)
+	
+	if err != nil {
+		errorsMessage := gin.H{"errors": err.Error()}
+
+		response := helper.APIResponse("login failed",http.StatusUnprocessableEntity, "error", errorsMessage)
+		c.JSON(http.StatusUnprocessableEntity,response)
+		return
+	}
+	response:= helper.APIResponse("succes input data",http.StatusOK,"updated", loggedInUser)
+	c.JSON(http.StatusOK, response)
 
 
-
-
+}
+	
