@@ -3,7 +3,7 @@ package handler
 import (
 	"campaign/Controller"
 	models "campaign/Model"
-	Handler "campaign/handler/folderHandler"
+	UserHandler "campaign/handler/User"
 	"fmt"
 	"net/http"
 
@@ -16,7 +16,7 @@ var (
 	db = controller.Connect()
 	userRepository= models.NewRepository(db)
 	userService = models.NewService(userRepository)
-	Userhandler = Handler.NewUserHandler(userService)
+	Userhandler = UserHandler.NewUserHandler(userService)
 
 
 )
@@ -31,11 +31,11 @@ func RouterV1(){
 	
 	router :=gin.Default()
 	api :=router.Group("/api/v1")
-	api.GET("/user",Handler.HandlerUser)
+	api.GET("/user",UserHandler.HandlerUser)
 	api.GET("/", test)
 	api.GET("/login", login)
 	api.POST("/login", Userhandler.Login)
-	router.POST("/user",Userhandler.RegisterUser)
+	api.POST("/user",Userhandler.RegisterUser)
 	router.Run()
 }
 

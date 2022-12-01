@@ -10,6 +10,7 @@ import (
 type Service interface{
 	RegisterUser(input RegisterUserInput) (User, error)
 	Login(input LoginInput) (User,error)
+	//CheckEmail(user User) (bool, error)
 }
 
 type service struct{
@@ -28,7 +29,20 @@ func (s *service) RegisterUser(input RegisterUserInput)(User,error){
 	user := User{}
 	user.Name =  input.Name
 	user.Email = input.Email
+
 	user.Occupation= input.Occupation
+
+
+	checkemail, err := s.repository.FindByEmail(user.Email)
+	if err == nil{
+		return user, errors.New("email already used")
+		
+	}
+	if checkemail.ID==0{
+		return user, err
+	}
+
+
 	password,err := bcrypt.GenerateFromPassword([]byte(input.Password),bcrypt.MinCost)
 	if err!= nil{
 		  return user, err
@@ -67,4 +81,6 @@ func(s *service) Login(input LoginInput) (User,error){
 		}
 	return user,nil
 }
+
+
 

@@ -1,11 +1,15 @@
 package Models
 
-import "gorm.io/gorm"
+import (
+
+	"gorm.io/gorm"
+)
 
 
 type Repository interface{
 	Save(user User) (User, error)
 	FindByEmail(email string) (User, error)
+	
 }
 type repository struct{
 	db  *gorm.DB
@@ -35,4 +39,4 @@ func (r *repository) FindByEmail(email string)(User, error){
 	}
 	return user, nil
 
-}
+} 

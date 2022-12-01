@@ -1,10 +1,10 @@
 package Models
 
 type RegisterUserInput struct{
-	Name		string 	`binding:"required"`
-	Occupation	string	`binding:"required"`
-	Email		string	`binding:"required"`
-	Password	string	`binding:"required"`
+	Name		string 	`json:"name" binding:"required"`
+	Occupation	string	`json:"occupation" binding:"required"`
+	Email		string	`json:"email" binding:"required"`
+	Password	string	`json:"password" binding:"required"`
 	AvatarFileName	string	
 	Token 		string
 }
@@ -12,4 +12,9 @@ type RegisterUserInput struct{
 type LoginInput struct{
 	Email string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`
+}
+
+type CheckEmailAvaible struct{
+	Email string `json:"email" binding:"required"`
+
 }

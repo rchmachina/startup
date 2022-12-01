@@ -2,7 +2,7 @@ package main
 
 import (
 	//"campaign/Controller"
-	// controller "campaign/Controller"
+	//controller "campaign/Controller"
 	// models "campaign/Model"
 	// "fmt"
 	handler "campaign/handler"
@@ -22,6 +22,7 @@ func main(){
 	// }
 	
 	//controller.Automigrates()
+	//controller.MigrateUser()
 	//controller.Adduser()
 
 	handler.RouterV1()

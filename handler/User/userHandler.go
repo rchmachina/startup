@@ -55,11 +55,16 @@ func (h *userHandler) RegisterUser(c *gin.Context){
 		return
 
 	}
+	
+
+
+
 	inputdata,err:= h.userService.RegisterUser(input)
 	if err!=nil{
+		errorsMessage := gin.H{"errors": err.Error()}
 		//
-		
-		c.JSON(http.StatusBadRequest,helper.APIResponse("fail",http.StatusBadRequest,"not updated",nil))
+		c.JSON(http.StatusBadRequest,helper.APIResponse("fail",http.StatusBadRequest,"not updated",errorsMessage))
+		return
 	}
 
 
@@ -101,4 +106,4 @@ func (h *userHandler) Login(c *gin.Context){
 
 
 }
-	
+
