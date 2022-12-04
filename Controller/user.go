@@ -7,7 +7,7 @@ func Adduser(){
 	userRepository := Models.NewRepository(db)
 	user := Models.User{
 		Name: "test simpan2",}
-		userRepository.Save(user)
+		userRepository.Create(user)
 
 	userNewservice := Models.NewService(userRepository)
 

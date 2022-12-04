@@ -4,10 +4,11 @@ import (
 	controller "campaign/Controller"
 	Models "campaign/Model"
 	"campaign/helper"
-	
+	"fmt"
+
 	"log"
 	"net/http"
-
+	
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 )
@@ -28,6 +29,9 @@ func HandlerUser (c *gin.Context){
 
 }
 
+
+
+
 //post user
 type userHandler struct{
 	userService Models.Service
@@ -37,9 +41,11 @@ func NewUserHandler(userService Models.Service) *userHandler{
 	return &userHandler{userService}
 }
 
+
+
 func (h *userHandler) RegisterUser(c *gin.Context){
 	var input Models.RegisterUserInput
-	err := c.ShouldBindJSON(&input)
+	err := c.Bind(&input)
 	if err !=nil{
 		var errors []string
 
@@ -58,7 +64,6 @@ func (h *userHandler) RegisterUser(c *gin.Context){
 	
 
 
-
 	inputdata,err:= h.userService.RegisterUser(input)
 	if err!=nil{
 		errorsMessage := gin.H{"errors": err.Error()}
@@ -72,11 +77,12 @@ func (h *userHandler) RegisterUser(c *gin.Context){
 	c.JSON(http.StatusOK, response)
 }
 
+
 func (h *userHandler) Login(c *gin.Context){
 
 	var input Models.LoginInput
 
-	err := c.ShouldBindJSON(&input)
+	err := c.Bind(&input)
 	if err != nil{
 		var errors []string
 
@@ -101,9 +107,59 @@ func (h *userHandler) Login(c *gin.Context){
 		c.JSON(http.StatusUnprocessableEntity,response)
 		return
 	}
+	
 	response:= helper.APIResponse("succes input data",http.StatusOK,"updated", loggedInUser)
-	c.JSON(http.StatusOK, response)
 
+	c.JSON(http.StatusOK, response)
 
 }
 
+
+
+
+
+func (h *userHandler) ChangeAvatar(c *gin.Context){
+
+	var input Models.LoginInput
+
+	err := c.Bind(&input)
+	if err != nil{
+		var errors []string
+
+		for _, e := range err.(validator.ValidationErrors){
+			errors = append(errors , e.Error())
+			
+		}
+
+		errorsMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse("login failed",http.StatusUnprocessableEntity, "error", errorsMessage)
+		c.JSON(http.StatusUnprocessableEntity,response)
+		return
+
+	}
+	file, err := c.FormFile("avatar")
+
+	if err != nil{
+		errorsMessage := gin.H{"errors": err.Error()}
+		c.JSON(http.StatusBadRequest,helper.APIResponse("fail",http.StatusBadRequest,"please upload file",errorsMessage))
+		return
+
+	}
+	var path string = fmt.Sprintf("images/" + file.Filename)
+	pathformater := helper.Formaterword(path)
+	c.SaveUploadedFile(file,pathformater)
+
+	
+	inputAvatar,err:= h.userService.ChangeAvatar(input, path)
+	if err!=nil{
+		errorsMessage := gin.H{"errors": err.Error()}
+		//
+		c.JSON(http.StatusBadRequest,helper.APIResponse("fail",http.StatusBadRequest,"not updated",errorsMessage))
+		return
+	}
+
+	IDstring := string(inputAvatar.ID) + "updated"
+	response:= helper.APIResponse("Image updated",http.StatusOK,IDstring, inputAvatar)
+	c.JSON(http.StatusOK, response)
+}

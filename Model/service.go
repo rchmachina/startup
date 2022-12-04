@@ -2,85 +2,132 @@ package Models
 
 import (
 	"errors"
+	//"fmt"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
-
-type Service interface{
+type Service interface {
 	RegisterUser(input RegisterUserInput) (User, error)
-	Login(input LoginInput) (User,error)
+	Login(input LoginInput) (User, error)
+	//SaveAvatar(ID int, fileLocation string) (User, error)
 	//CheckEmail(user User) (bool, error)
+	ChangeAvatar(input LoginInput, file string) (User, error)
 }
 
-type service struct{
+type service struct {
 	repository Repository
-
-
 }
 
-func NewService(NewRepository Repository) *service{
+func NewService(NewRepository Repository) *service {
 	return &service{NewRepository}
 }
 
+// buat func samain user struct dengan image structnya
+//ambil repositi dari find by email
+//jika dari emailnya ada ambil IDnya
+//save ke repositi yg ada dbnya
 
-func (s *service) RegisterUser(input RegisterUserInput)(User,error){
+func (s *service) ChangeAvatar(input LoginInput, path string) (User, error) {
+
+	finduser, err := s.repository.FindByEmail(input.Email)
+	if err != nil {
+		return finduser, errors.New("email not found")
+	}
+	if finduser.ID == 0 {
+		return finduser, errors.New("not found")
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(finduser.PasswordHash), []byte(input.Password))
+	if err != nil {
+		return User{}, errors.New("password wrong")
+	}
+
+	// findID, err := s.repository.FindById(int(CheckEmail.ID))
+	// if err != nil{
+	// 	return user, err
+
+	// }
+
+	user := User{ID: finduser.ID, Role: finduser.Role, Name: finduser.Role, PasswordHash: finduser.PasswordHash,
+		AvatarFileName: path, Occupation: finduser.Occupation, Token: finduser.Token, CreatedAt: finduser.CreatedAt, Email: input.Email}
+
+	updateUser, err := s.repository.Update(user)
+	if err != nil {
+		return updateUser, err
+	}
+	return updateUser, nil
+
+}
+
+func (s *service) RegisterUser(input RegisterUserInput) (User, error) {
 
 	user := User{}
-	user.Name =  input.Name
+	user.Name = input.Name
 	user.Email = input.Email
 
-	user.Occupation= input.Occupation
+	user.Occupation = input.Occupation
 
-
-	checkemail, err := s.repository.FindByEmail(user.Email)
-	if err == nil{
-		return user, errors.New("email already used")
-		
+	checkemail, _ := s.repository.FindByEmail(user.Email)
+	// if err != nil{
+	// 	return checkemail, errors.New("email already exist")
+	// }
+	if checkemail.ID != 0 {
+		return checkemail, errors.New("email already exist")
 	}
-	if checkemail.ID==0{
+
+	password, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.MinCost)
+	if err != nil {
 		return user, err
-	}
-
-
-	password,err := bcrypt.GenerateFromPassword([]byte(input.Password),bcrypt.MinCost)
-	if err!= nil{
-		  return user, err
 	}
 	user.PasswordHash = string(password)
-	if user.Role == ""{
-		user.Role="user"
+	if user.Role == "" {
+		user.Role = "user"
 	}
-	if user.AvatarFileName ==""{
-		user.AvatarFileName="pictNewAvatar"
+	if user.AvatarFileName == "" {
+		user.AvatarFileName = "pictNewAvatar"
 	}
 	user.Token = input.Token
-		
-	newUser, err := s.repository.Save(user)
-	if err!=nil{	
+
+	UpdatedUser, err := s.repository.Create(user)
+	if err != nil {
 		return user, err
-		}
-	return newUser, nil
+	}
+	return UpdatedUser, nil
 }
-	
-func(s *service) Login(input LoginInput) (User,error){
+
+func (s *service) Login(input LoginInput) (User, error) {
 	email := input.Email
 	password := input.Password
 
-	user, err :=s.repository.FindByEmail(email)
-	if err != nil{
+	user, err := s.repository.FindByEmail(email)
+	if err != nil {
 		return user, errors.New("email not found")
 	}
-	if user.ID==0{
+	if user.ID == 0 {
 		return user, errors.New("not found")
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password))
-	if err !=nil{
+	if err != nil {
 		return user, errors.New("password wrong")
-		}
-	return user,nil
+	}
+	return user, nil
 }
 
+// func (s *service) SaveAvatar(ID int, fileLocation string)(User, error){
 
+// 	user, err := s.repository.FindById(ID)
+// 	if err != nil{
+// 		return user, err
 
+// 	}
+// 	user.AvatarFileName = fileLocation
+
+// 	s.repository.Update(user)
+// 	updatedUser , err := s.repository.Update(user)
+// 	if err != nil{
+// 		return updatedUser, err
+// 	}
+// 	return updatedUser,nil
+// }

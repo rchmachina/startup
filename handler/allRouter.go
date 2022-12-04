@@ -18,7 +18,7 @@ var (
 	userService = models.NewService(userRepository)
 	Userhandler = UserHandler.NewUserHandler(userService)
 
-
+	
 )
 
 
@@ -34,8 +34,9 @@ func RouterV1(){
 	api.GET("/user",UserHandler.HandlerUser)
 	api.GET("/", test)
 	api.GET("/login", login)
-	api.POST("/login", Userhandler.Login)
+	api.POST("/Loginuser", Userhandler.Login)
 	api.POST("/user",Userhandler.RegisterUser)
+	api.POST("/uploadAvatar", Userhandler.ChangeAvatar)
 	router.Run()
 }
 
