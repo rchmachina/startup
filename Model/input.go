@@ -15,9 +15,8 @@ type LoginInput struct {
 }
 
 type ChangeImageInput struct {
-	Email    string `json:"email" binding:"required" form:"email"`
-	Password string `json:"password" binding:"required" form:"password"`
-	File     string `json:"image" binding:"required" form:"file"`
+	Token    string `json:"email" binding:"required" form:"token"`
+	
 }
 type CheckEmailAvaible struct {
 	Email string `json:"email" binding:"required"`

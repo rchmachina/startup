@@ -3,12 +3,13 @@ package handler
 import (
 	controller "campaign/Controller"
 	Models "campaign/Model"
+	"campaign/auth"
 	"campaign/helper"
-	"fmt"
 
+	"fmt"
 	"log"
 	"net/http"
-	
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 )
@@ -35,10 +36,11 @@ func HandlerUser (c *gin.Context){
 //post user
 type userHandler struct{
 	userService Models.Service
+	authService auth.Service
 }
 
-func NewUserHandler(userService Models.Service) *userHandler{
-	return &userHandler{userService}
+func NewUserHandler(userService Models.Service, authService auth.Service) *userHandler{
+	return &userHandler{userService, authService} 
 }
 
 
@@ -71,7 +73,15 @@ func (h *userHandler) RegisterUser(c *gin.Context){
 		c.JSON(http.StatusBadRequest,helper.APIResponse("fail",http.StatusBadRequest,"not updated",errorsMessage))
 		return
 	}
+	token, err := h.authService.GenerateToken(int(inputdata.ID))
+	if err != nil{
+		return 
+	}
+	inputdata.Token = token
+	
 
+
+	   
 
 	response:= helper.APIResponse("succes input data",http.StatusOK,"updated", inputdata)
 	c.JSON(http.StatusOK, response)
@@ -107,8 +117,14 @@ func (h *userHandler) Login(c *gin.Context){
 		c.JSON(http.StatusUnprocessableEntity,response)
 		return
 	}
+	token, err := h.authService.GenerateToken(int(loggedInUser.ID))
+	if err != nil{
+		return 
+	}
 	
-	response:= helper.APIResponse("succes input data",http.StatusOK,"updated", loggedInUser)
+	formatuser := helper.Formatuser(loggedInUser.Name, token)
+	
+	response:= helper.APIResponse("succes input data",http.StatusOK,"updated", formatuser)
 
 	c.JSON(http.StatusOK, response)
 
@@ -120,7 +136,7 @@ func (h *userHandler) Login(c *gin.Context){
 
 func (h *userHandler) ChangeAvatar(c *gin.Context){
 
-	var input Models.LoginInput
+	var input Models.ChangeImageInput
 
 	err := c.Bind(&input)
 	if err != nil{
@@ -151,7 +167,7 @@ func (h *userHandler) ChangeAvatar(c *gin.Context){
 	c.SaveUploadedFile(file,pathformater)
 
 	
-	inputAvatar,err:= h.userService.ChangeAvatar(input, path)
+	inputAvatar,err:= h.userService.ChangeAvatar(input.Token, path)
 	if err!=nil{
 		errorsMessage := gin.H{"errors": err.Error()}
 		//

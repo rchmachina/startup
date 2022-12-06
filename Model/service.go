@@ -1,6 +1,7 @@
 package Models
 
 import (
+	
 	"errors"
 	//"fmt"
 
@@ -12,7 +13,7 @@ type Service interface {
 	Login(input LoginInput) (User, error)
 	//SaveAvatar(ID int, fileLocation string) (User, error)
 	//CheckEmail(user User) (bool, error)
-	ChangeAvatar(input LoginInput, file string) (User, error)
+	ChangeAvatar(token string, file string) (User, error)
 }
 
 type service struct {
@@ -28,29 +29,15 @@ func NewService(NewRepository Repository) *service {
 //jika dari emailnya ada ambil IDnya
 //save ke repositi yg ada dbnya
 
-func (s *service) ChangeAvatar(input LoginInput, path string) (User, error) {
+func (s *service) ChangeAvatar(token string, path string) (User, error) {
 
-	finduser, err := s.repository.FindByEmail(input.Email)
+	finduser, err := s.repository.FindByToken(token)
 	if err != nil {
-		return finduser, errors.New("email not found")
+		return finduser, errors.New("token not found")
 	}
-	if finduser.ID == 0 {
-		return finduser, errors.New("not found")
-	}
-
-	err = bcrypt.CompareHashAndPassword([]byte(finduser.PasswordHash), []byte(input.Password))
-	if err != nil {
-		return User{}, errors.New("password wrong")
-	}
-
-	// findID, err := s.repository.FindById(int(CheckEmail.ID))
-	// if err != nil{
-	// 	return user, err
-
-	// }
 
 	user := User{ID: finduser.ID, Role: finduser.Role, Name: finduser.Role, PasswordHash: finduser.PasswordHash,
-		AvatarFileName: path, Occupation: finduser.Occupation, Token: finduser.Token, CreatedAt: finduser.CreatedAt, Email: input.Email}
+		AvatarFileName: path, Occupation: finduser.Occupation, Token: finduser.Token, CreatedAt: finduser.CreatedAt, Email: finduser.Email}
 
 	updateUser, err := s.repository.Update(user)
 	if err != nil {
@@ -87,12 +74,18 @@ func (s *service) RegisterUser(input RegisterUserInput) (User, error) {
 	if user.AvatarFileName == "" {
 		user.AvatarFileName = "pictNewAvatar"
 	}
-	user.Token = input.Token
+
+
+
 
 	UpdatedUser, err := s.repository.Create(user)
 	if err != nil {
 		return user, err
 	}
+
+
+
+
 	return UpdatedUser, nil
 }
 
@@ -112,6 +105,7 @@ func (s *service) Login(input LoginInput) (User, error) {
 	if err != nil {
 		return user, errors.New("password wrong")
 	}
+
 	return user, nil
 }
 
@@ -131,3 +125,6 @@ func (s *service) Login(input LoginInput) (User, error) {
 // 	}
 // 	return updatedUser,nil
 // }
+
+
+

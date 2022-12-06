@@ -3,6 +3,7 @@ package handler
 import (
 	"campaign/Controller"
 	models "campaign/Model"
+	"campaign/auth"
 	UserHandler "campaign/handler/User"
 	"fmt"
 	"net/http"
@@ -16,7 +17,7 @@ var (
 	db = controller.Connect()
 	userRepository= models.NewRepository(db)
 	userService = models.NewService(userRepository)
-	Userhandler = UserHandler.NewUserHandler(userService)
+	Userhandler = UserHandler.NewUserHandler(userService,auth.NewService())
 
 	
 )

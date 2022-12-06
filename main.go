@@ -1,25 +1,27 @@
 package main
 
 import (
+	controller "campaign/Controller"
+	models "campaign/Model"
+	//"os"
 
-	// controller "campaign/Controller"
-	// models "campaign/Model"
 	// "fmt"
 	handler "campaign/handler"
-	//UserHandler "campaign/handler/User"
+	"fmt"
+
+	auth "campaign/auth"
+	UserHandler "campaign/handler/User"
 	//"fmt"
 )
 
-// var (
+var (
 
+	db = controller.Connect()
+	userRepository= models.NewRepository(db)
+	userService = models.NewService(userRepository)
+	Userhandler = UserHandler.NewUserHandler(userService, auth.NewService())
 
-// 	db = controller.Connect()
-// 	userRepository= models.NewRepository(db)
-// 	userService = models.NewService(userRepository)
-// 	Userhandler = UserHandler.NewUserHandler(userService)
-
-	
-// )
+)
 
 
 func main(){
@@ -38,6 +40,11 @@ func main(){
 	//controller.MigrateUser()
 	//controller.Adduser()
 	//userService.SaveAvatar(4,"image/1")
+	authservice := auth.NewService()
+	
+	fmt.Println(authservice.GenerateToken(10))
+
+
 	handler.RouterV1()
 	// db := controller.Connect()
 	// userRepository := models.NewRepository(db)
