@@ -1,8 +1,9 @@
 package Models
 
 import (
-	
+	"campaign/auth"
 	"errors"
+
 	//"fmt"
 
 	"golang.org/x/crypto/bcrypt"
@@ -11,33 +12,46 @@ import (
 type Service interface {
 	RegisterUser(input RegisterUserInput) (User, error)
 	Login(input LoginInput) (User, error)
-	//SaveAvatar(ID int, fileLocation string) (User, error)
-	//CheckEmail(user User) (bool, error)
-	ChangeAvatar(token string, file string) (User, error)
+	ChangeAvatar(ID int, file string) (User, error)
 }
 
 type service struct {
-	repository Repository
+	repository  Repository
+	authService auth.Service
 }
 
-func NewService(NewRepository Repository) *service {
-	return &service{NewRepository}
+func NewService(NewRepository Repository, authService auth.Service) *service {
+	return &service{NewRepository, authService}
 }
 
 // buat func samain user struct dengan image structnya
-//ambil repositi dari find by email
-//jika dari emailnya ada ambil IDnya
-//save ke repositi yg ada dbnya
-
-func (s *service) ChangeAvatar(token string, path string) (User, error) {
-
-	finduser, err := s.repository.FindByToken(token)
+// ambil repositi dari find by email
+// jika dari emailnya ada ambil IDnya
+// save ke repositi yg ada dbnya
+func (s *service) GetbyId(ID int) (User, error) {
+	user, err := s.repository.FindById(ID)
 	if err != nil {
-		return finduser, errors.New("token not found")
+		return user, errors.New("error")
+	}
+	if user.ID == 0 {
+		return user, errors.New(" id not found yet")
+	}
+	return user, nil
+}
+
+func (s *service) ChangeAvatar(ID int, path string) (User, error) {
+
+	finduser, err := s.repository.FindById(ID)
+	if err != nil {
+		return finduser, errors.New("id not found")
+	}
+	Tokenizer, err := s.authService.GenerateToken(int(finduser.ID))
+	if err != nil {
+		return finduser, err
 	}
 
-	user := User{ID: finduser.ID, Role: finduser.Role, Name: finduser.Role, PasswordHash: finduser.PasswordHash,
-		AvatarFileName: path, Occupation: finduser.Occupation, Token: finduser.Token, CreatedAt: finduser.CreatedAt, Email: finduser.Email}
+	user := User{ID: finduser.ID, Role: finduser.Role, Name: finduser.Name, PasswordHash: finduser.PasswordHash,
+		AvatarFileName: path, Occupation: finduser.Occupation, Token: Tokenizer, CreatedAt: finduser.CreatedAt, Email: finduser.Email}
 
 	updateUser, err := s.repository.Update(user)
 	if err != nil {
@@ -75,16 +89,17 @@ func (s *service) RegisterUser(input RegisterUserInput) (User, error) {
 		user.AvatarFileName = "pictNewAvatar"
 	}
 
+	Tokenizer, err := s.authService.GenerateToken(int(user.ID))
+	if err != nil {
+		return user, err
+	}
 
-
+	user.Token = Tokenizer
 
 	UpdatedUser, err := s.repository.Create(user)
 	if err != nil {
 		return user, err
 	}
-
-
-
 
 	return UpdatedUser, nil
 }
@@ -108,23 +123,3 @@ func (s *service) Login(input LoginInput) (User, error) {
 
 	return user, nil
 }
-
-// func (s *service) SaveAvatar(ID int, fileLocation string)(User, error){
-
-// 	user, err := s.repository.FindById(ID)
-// 	if err != nil{
-// 		return user, err
-
-// 	}
-// 	user.AvatarFileName = fileLocation
-
-// 	s.repository.Update(user)
-// 	updatedUser , err := s.repository.Update(user)
-// 	if err != nil{
-// 		return updatedUser, err
-// 	}
-// 	return updatedUser,nil
-// }
-
-
-

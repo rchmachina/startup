@@ -16,7 +16,7 @@ type Repository interface{
 	
 }
 type repository struct{
-	db  *gorm.DB
+	db  *gorm.DB 
 
 }
 

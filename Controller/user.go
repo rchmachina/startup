@@ -1,6 +1,9 @@
 package controller
 
-import Models "campaign/Model"
+import (
+	Models "campaign/Model"
+	"campaign/auth"
+)
 
 func Adduser(){
 	db := Connect()
@@ -9,7 +12,7 @@ func Adduser(){
 		Name: "test simpan2",}
 		userRepository.Create(user)
 
-	userNewservice := Models.NewService(userRepository)
+	userNewservice := Models.NewService(userRepository, auth.NewService())
 
 	
 	regUser := Models.RegisterUserInput{

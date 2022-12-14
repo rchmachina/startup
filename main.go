@@ -18,7 +18,7 @@ var (
 
 	db = controller.Connect()
 	userRepository= models.NewRepository(db)
-	userService = models.NewService(userRepository)
+	userService = models.NewService(userRepository,auth.NewService())
 	Userhandler = UserHandler.NewUserHandler(userService, auth.NewService())
 
 )

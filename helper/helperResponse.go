@@ -18,12 +18,14 @@ type Meta struct{
 type Formater struct{
 	Username string`json:"userName"`
 	Token string `json:"Token"`
+	ID int `json:"id"`
 }
 
-func Formatuser(username string, token string) Formater{
+func Formatuser(username string, id int, token string) Formater{
 	formatuser:= Formater{
 		Username: username,
 		Token: token ,
+		ID:id,
 	}
 	return formatuser
 }

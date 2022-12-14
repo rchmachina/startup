@@ -1,5 +1,7 @@
 package Models
 
+
+
 type RegisterUserInput struct {
 	Name           string `json:"name" binding:"required" form:"name"`
 	Occupation     string `json:"occupation" binding:"required" form:"occupation"`
@@ -15,7 +17,8 @@ type LoginInput struct {
 }
 
 type ChangeImageInput struct {
-	Token    string `json:"email" binding:"required" form:"token"`
+	ID    int `json:"id" binding:"required" form:"id"`
+	Token string `json:"token" binding:"required" form:"token"`
 	
 }
 type CheckEmailAvaible struct {

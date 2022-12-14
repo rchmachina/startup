@@ -10,6 +10,7 @@ import (
 
 type Service interface{
 	GenerateToken(userID int) (string, error)
+	ValidateToken(encodedtoken string)(*jwt.Token,error)
 }
 
 type jwtService struct{
@@ -57,4 +58,5 @@ func(h *jwtService)ValidateToken(encodedtoken string) (*jwt.Token, error){
 
 		}
 		return token , nil
+		
 	}

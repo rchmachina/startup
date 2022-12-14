@@ -2,6 +2,10 @@ package handler
 
 import (
 	"campaign/Controller"
+	//"campaign/helper"
+	"campaign/middleware"
+	//"strings"
+
 	models "campaign/Model"
 	"campaign/auth"
 	UserHandler "campaign/handler/User"
@@ -16,11 +20,12 @@ var (
 
 	db = controller.Connect()
 	userRepository= models.NewRepository(db)
-	userService = models.NewService(userRepository)
+	userService = models.NewService(userRepository,auth.NewService())
 	Userhandler = UserHandler.NewUserHandler(userService,auth.NewService())
 
 	
 )
+
 
 
 
@@ -37,7 +42,7 @@ func RouterV1(){
 	api.GET("/login", login)
 	api.POST("/Loginuser", Userhandler.Login)
 	api.POST("/user",Userhandler.RegisterUser)
-	api.POST("/uploadAvatar", Userhandler.ChangeAvatar)
+	api.POST("/uploadAvatar", middleware.AuthMiddleware(auth.NewService(),userRepository),Userhandler.ChangeAvatar)
 	router.Run()
 }
 
@@ -51,6 +56,8 @@ func test(c *gin.Context){
 	if err != nil{
 		fmt.Print("error, not found")
 	}
+
+	
 	c.JSON(http.StatusOK, userByEmail.Name)
 
 }
