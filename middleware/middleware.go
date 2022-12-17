@@ -2,7 +2,7 @@ package middleware
 
 import (
 	//controller "campaign/Controller"
-	Models "campaign/Model"
+	Models "campaign/Model/user"
 	"campaign/auth"
 
 	"campaign/helper"

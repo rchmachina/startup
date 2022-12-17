@@ -1,12 +1,12 @@
 package handler
 
 import (
-	"campaign/Controller"
+	DB "campaign/DB"
 	//"campaign/helper"
 	"campaign/middleware"
 	//"strings"
 
-	models "campaign/Model"
+	models "campaign/Model/user"
 	"campaign/auth"
 	UserHandler "campaign/handler/User"
 	"fmt"
@@ -18,7 +18,7 @@ import (
 var (
 
 
-	db = controller.Connect()
+	db = DB.Connect()
 	userRepository= models.NewRepository(db)
 	userService = models.NewService(userRepository,auth.NewService())
 	Userhandler = UserHandler.NewUserHandler(userService,auth.NewService())

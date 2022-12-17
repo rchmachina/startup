@@ -1,8 +1,8 @@
 package main
 
 import (
-	controller "campaign/Controller"
-	models "campaign/Model"
+	database "campaign/DB"
+	models "campaign/Model/user"
 	//"os"
 
 	// "fmt"
@@ -16,7 +16,7 @@ import (
 
 var (
 
-	db = controller.Connect()
+	db = database.Connect()
 	userRepository= models.NewRepository(db)
 	userService = models.NewService(userRepository,auth.NewService())
 	Userhandler = UserHandler.NewUserHandler(userService, auth.NewService())
@@ -43,7 +43,7 @@ func main(){
 	authservice := auth.NewService()
 	
 	fmt.Println(authservice.GenerateToken(10))
-
+	//database.Automigrates()
 
 	handler.RouterV1()
 	// db := controller.Connect()

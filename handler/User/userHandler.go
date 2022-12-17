@@ -1,8 +1,8 @@
 package handler
 
 import (
-	controller "campaign/Controller"
-	Models "campaign/Model"
+	database "campaign/DB"
+	Models "campaign/Model/user"
 	"campaign/auth"
 	"campaign/helper"
 	"strings"
@@ -17,7 +17,7 @@ import (
 
 // get user
 func HandlerUser(c *gin.Context) {
-	db := controller.Connect()
+	db := database.Connect()
 
 	sqlDB, err := db.DB()
 	if err != nil {

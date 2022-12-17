@@ -1,7 +1,7 @@
 package controller
 
 import (
-	Models "campaign/Model"
+	Models "campaign/Model/user"
 	"campaign/auth"
 )
 
