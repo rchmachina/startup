@@ -50,6 +50,7 @@ func (s *service) ChangeAvatar(ID int, path string) (User, error) {
 		return finduser, err
 	}
 
+	
 	user := User{ID: finduser.ID, Role: finduser.Role, Name: finduser.Name, PasswordHash: finduser.PasswordHash,
 		AvatarFileName: path, Occupation: finduser.Occupation, Token: Tokenizer, CreatedAt: finduser.CreatedAt, Email: finduser.Email}
 

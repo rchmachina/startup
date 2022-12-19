@@ -5,8 +5,9 @@ import (
 	//"campaign/helper"
 	"campaign/middleware"
 	//"strings"
-
-	models "campaign/Model/user"
+	campaign_handler "campaign/handler/Campaign"
+	models_campaign "campaign/Model/campaign"
+	models_user "campaign/Model/user"
 	"campaign/auth"
 	UserHandler "campaign/handler/User"
 	"fmt"
@@ -17,11 +18,17 @@ import (
 
 var (
 
-
+	//user 
 	db = DB.Connect()
-	userRepository= models.NewRepository(db)
-	userService = models.NewService(userRepository,auth.NewService())
+	userRepository= models_user.NewRepository(db)
+	userService = models_user.NewService(userRepository,auth.NewService())
 	Userhandler = UserHandler.NewUserHandler(userService,auth.NewService())
+	//campaign 
+
+	campaignRepository= models_campaign.NewRepository(db)
+	campaignService = models_campaign.NewService(campaignRepository)
+	campaignhandler = campaign_handler.NewCampaignHandler(campaignService)
+
 
 	
 )
@@ -36,10 +43,12 @@ func RouterV1(){
 
 	
 	router :=gin.Default()
+	router.Static("/images","./images")
 	api :=router.Group("/api/v1")
 	api.GET("/user",UserHandler.HandlerUser)
 	api.GET("/", test)
 	api.GET("/login", login)
+	api.GET("/campaign", campaignhandler.FindCampaigns)
 	api.POST("/Loginuser", Userhandler.Login)
 	api.POST("/user",Userhandler.RegisterUser)
 	api.POST("/uploadAvatar", middleware.AuthMiddleware(auth.NewService(),userRepository),Userhandler.ChangeAvatar)
@@ -63,7 +72,7 @@ func test(c *gin.Context){
 }
 
 func login(c *gin.Context){
-	input := models.LoginInput{
+	input := models_user.LoginInput{
 		Email : "testing@gmail.com",
 		Password :"12345",
 	}

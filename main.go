@@ -2,16 +2,14 @@ package main
 
 import (
 	database "campaign/DB"
+	model_campaigns "campaign/Model/campaign"
 	models "campaign/Model/user"
-	//"os"
 
-	// "fmt"
-	handler "campaign/handler"
 	"fmt"
-
+	//
 	auth "campaign/auth"
 	UserHandler "campaign/handler/User"
-	//"fmt"
+	handler "campaign/handler"
 )
 
 var (
@@ -20,6 +18,10 @@ var (
 	userRepository= models.NewRepository(db)
 	userService = models.NewService(userRepository,auth.NewService())
 	Userhandler = UserHandler.NewUserHandler(userService, auth.NewService())
+	campaignRepository= model_campaigns.NewRepository(db)
+	//campaignService = model_campaigns.NewService(campaignRepository)
+	//campaignhandler = campaign_handler.NewCampaignHandler(campaignService)
+
 
 )
 
@@ -36,14 +38,27 @@ func main(){
 	// 	log.Fatalln(err)
 	// }
 	
-	//controller.Automigrates()
+	database.Automigrates()
 	//controller.MigrateUser()
 	//controller.Adduser()
 	//userService.SaveAvatar(4,"image/1")
 	authservice := auth.NewService()
 	
 	fmt.Println(authservice.GenerateToken(10))
-	//database.Automigrates()
+	database.Automigrates()
+	//database.MigrateCampaign()
+	// campaigns, err := campaignRepository.FindByUserID(int(6969))
+	// 	if err!=nil{
+	// 		fmt.Println("there something wrong")
+	// 	}
+
+	// for _, campaign :=range campaigns{
+	// 	fmt.Println(campaign.Name)
+	// 	fmt.Println(campaign.UserID)
+	// 	if len(campaign.CampaignImage)>0{
+	// 		fmt.Println(campaign.CampaignImage[0].FileName)
+	// 	}
+	// }
 
 	handler.RouterV1()
 	// db := controller.Connect()
