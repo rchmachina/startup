@@ -1,5 +1,9 @@
-package campaign
+package Models
 
+import (
+	"fmt"
+	"strings"
+)
 
 
 type CampaignFormatter struct{
@@ -11,7 +15,11 @@ type CampaignFormatter struct{
 	GoalAmount			int		`json:"goal_ammount"`
 	CurrentAmount		int		`json:"current_ammount"`
 	Slug				string	`json:"slug"`
+	
 }
+
+
+
 
 func FormatCompaign (campaign Campaign)(CampaignFormatter){
 	
@@ -40,4 +48,95 @@ func FormatCompaigns(Campaign []Campaign)([]CampaignFormatter){
 		campaignsFormatter =append(campaignsFormatter,campaignFormatter)
 	}
 	return campaignsFormatter
+}
+
+
+type CampaignFormatterDetail struct{
+	ID					int 	`json:"id" `
+	
+	DetailUser		DetailUser 	`json:"detail_user"`
+	Name				string	`json:"name_campaign"`
+	ShortDescription	string	`json:"short_description"`
+	ImageUrl	string	`json:"image_url"`
+	SecondaryImageUrl[]	SecondaryImage	`json:"Secondary_image_url"`
+	GoalAmount			int		`json:"goal_ammount"`
+	CurrentAmount		int		`json:"current_ammount"`
+	Slug				string	`json:"slug"`
+	Perks				[]string	`json:"perk"`
+	
+}
+
+type DetailUser struct{
+	UserID 				int	`json:"userid"`
+	UserName 			string	`json:"Username"`
+	Avatar 				string 	`json:"Avatar"`
+	
+}
+
+
+
+type SecondaryImage struct{
+	Secondary	bool	`json:"is secondary"`
+	ImageUrl	string	`json:"Secondary_image_url"`
+
+}
+
+func FormatCompaignSecondaryImage(images CampaignImage)(SecondaryImage){
+	SecondaryImages :=SecondaryImage{}
+	if images.IsPrimary !=1{
+		SecondaryImages.ImageUrl = images.FileName
+		SecondaryImages.Secondary = true
+	}
+	return SecondaryImages
+
+}
+
+
+func FormatCompaignDetail (campaign Campaign)(CampaignFormatterDetail){
+	DetailUser := DetailUser{}
+	DetailUser.Avatar = campaign.User.AvatarFileName
+	DetailUser.UserName = campaign.User.Name
+	DetailUser.UserID = campaign.UserID
+	CampaignFormatterDetail := CampaignFormatterDetail{}
+	CampaignFormatterDetail.ID = campaign.ID
+	
+
+	CampaignFormatterDetail.DetailUser = DetailUser
+	CampaignFormatterDetail.Name = campaign.Name
+	CampaignFormatterDetail.ShortDescription = campaign.ShortDescription
+	
+	CampaignFormatterDetail.GoalAmount = campaign.GoalAmount
+	CampaignFormatterDetail.CurrentAmount = campaign.CurrentAmount
+	CampaignFormatterDetail.Slug = campaign.Slug
+	
+
+	if len(campaign.CampaignImage) >0 { 
+		CampaignFormatterDetail.ImageUrl = campaign.CampaignImage[0].FileName
+		 for i:=1; i<len(campaign.CampaignImage);i++{
+			SecondaryImage := FormatCompaignSecondaryImage(campaign.CampaignImage[i])
+			CampaignFormatterDetail.SecondaryImageUrl  = append(CampaignFormatterDetail.SecondaryImageUrl , SecondaryImage )
+		 }
+
+	
+	}
+	var perkss []string
+	for _, perk :=range strings.Split(campaign.Perks,","){
+		perkss= append(perkss,perk)
+	}
+	fmt.Println(perkss)
+	CampaignFormatterDetail.Perks = perkss
+
+	
+	return CampaignFormatterDetail
+}
+
+
+func FormatCompaignsDetail(Campaign []Campaign)([]CampaignFormatterDetail){
+	var campaignsFormatterDetail []CampaignFormatterDetail
+	
+	for _, campaign := range Campaign{
+		campaignFormatterDetails := FormatCompaignDetail(campaign)
+		campaignsFormatterDetail =append(campaignsFormatterDetail,campaignFormatterDetails)
+	}
+	return campaignsFormatterDetail
 }

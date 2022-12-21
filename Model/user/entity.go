@@ -1,7 +1,7 @@
 package Models
 
 import (
-
+	
 	"time"
 )
 
@@ -17,6 +17,7 @@ type User struct{
 	Token 			string	`json:"token" gorm:"type:varchar(100);not_null"`
 	CreatedAt		time.Time
 	UpdatedAt		time.Time
-	//campaign []campaign.Campaign
+
+	
 }
 

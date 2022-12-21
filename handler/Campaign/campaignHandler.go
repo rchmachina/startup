@@ -3,11 +3,12 @@ package handler
 import (
 	Models "campaign/Model/campaign"
 	"campaign/helper"
+	"strconv"
 
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
+
 )
 
 type campaignHandler struct {
@@ -19,26 +20,11 @@ func NewCampaignHandler(campaignService Models.Service) *campaignHandler {
 	return &campaignHandler{campaignService}
 }
 
-func (h *campaignHandler) FindCampaigns (c *gin.Context) {
-	var input Models.Campaign
-	err := c.Bind(&input.UserID)
-	if err != nil {
-		var errors []string
+func (h *campaignHandler) FindCampaignsByuserId (c *gin.Context) {
+	UserID, _ :=strconv.Atoi(c.Query("userid"))
 
-		for _, e := range err.(validator.ValidationErrors) {
-			errors = append(errors, e.Error())
-
-		}
-
-		errorsMessage := gin.H{"errors": errors}
-
-		response := helper.APIResponse("failed to get data", http.StatusUnprocessableEntity, "error", errorsMessage)
-		c.JSON(http.StatusUnprocessableEntity, response)
-		return
-
-	}
 	
-	FindCampaigns, err := h.campaignService.FindCampaigns(int(input.UserID))
+	FindCampaigns, err := h.campaignService.FindCampaignsByuserId(UserID)
 	if err != nil {
 		errorsMessage := gin.H{"errors": err}
 		c.JSON(http.StatusBadRequest, helper.APIResponse("fail", http.StatusBadRequest, "not updated", errorsMessage))
@@ -49,4 +35,29 @@ func (h *campaignHandler) FindCampaigns (c *gin.Context) {
 	
 	response := helper.APIResponse("the data", http.StatusOK, "updated", formatCampaign)
 	c.JSON(http.StatusOK, response)
+}
+
+
+func (h *campaignHandler) FindCampaignByid (c *gin.Context) {
+	var input Models.GetCampaignByID
+	err := c.ShouldBindUri(&input)
+	if err != nil {
+		errorsMessage := gin.H{"errors": err}
+		c.JSON(http.StatusBadRequest, helper.APIResponse("fail", http.StatusBadRequest, "There something wrong ", errorsMessage))
+		return
+	}
+
+	FindCampaigns, err := h.campaignService.FindCampaignByid(input.ID)
+	if err != nil {
+		errorsMessage := gin.H{"errors": err}
+		c.JSON(http.StatusBadRequest, helper.APIResponse("fail", http.StatusBadRequest, "not updated", errorsMessage))
+		return
+	}
+	
+	formatCampaign := Models.FormatCompaignDetail(FindCampaigns)
+	
+	response := helper.APIResponse("the data", http.StatusOK, "updated", formatCampaign)
+	c.JSON(http.StatusOK, response)
+
+	
 }

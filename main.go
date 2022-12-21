@@ -2,23 +2,19 @@ package main
 
 import (
 	database "campaign/DB"
-	model_campaigns "campaign/Model/campaign"
-	models "campaign/Model/user"
+
 
 	"fmt"
 	//
 	auth "campaign/auth"
-	UserHandler "campaign/handler/User"
+
 	handler "campaign/handler"
 )
 
 var (
 
 	db = database.Connect()
-	userRepository= models.NewRepository(db)
-	userService = models.NewService(userRepository,auth.NewService())
-	Userhandler = UserHandler.NewUserHandler(userService, auth.NewService())
-	campaignRepository= model_campaigns.NewRepository(db)
+
 	//campaignService = model_campaigns.NewService(campaignRepository)
 	//campaignhandler = campaign_handler.NewCampaignHandler(campaignService)
 
@@ -38,15 +34,16 @@ func main(){
 	// 	log.Fatalln(err)
 	// }
 	
-	database.Automigrates()
+	//database.Automigrates()
 	//controller.MigrateUser()
 	//controller.Adduser()
 	//userService.SaveAvatar(4,"image/1")
 	authservice := auth.NewService()
 	
 	fmt.Println(authservice.GenerateToken(10))
-	database.Automigrates()
+
 	//database.MigrateCampaign()
+
 	// campaigns, err := campaignRepository.FindByUserID(int(6969))
 	// 	if err!=nil{
 	// 		fmt.Println("there something wrong")

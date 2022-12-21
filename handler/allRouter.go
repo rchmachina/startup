@@ -48,7 +48,9 @@ func RouterV1(){
 	api.GET("/user",UserHandler.HandlerUser)
 	api.GET("/", test)
 	api.GET("/login", login)
-	api.GET("/campaign", campaignhandler.FindCampaigns)
+	api.GET("/campaigns", campaignhandler.FindCampaignsByuserId)
+	api.GET("/campaignsdetail/:id", campaignhandler.FindCampaignByid)
+
 	api.POST("/Loginuser", Userhandler.Login)
 	api.POST("/user",Userhandler.RegisterUser)
 	api.POST("/uploadAvatar", middleware.AuthMiddleware(auth.NewService(),userRepository),Userhandler.ChangeAvatar)

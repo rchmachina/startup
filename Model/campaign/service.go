@@ -1,4 +1,4 @@
-package campaign
+package Models
 
 import (
 	
@@ -7,8 +7,8 @@ import (
 
 
 type Service interface{
-	FindCampaigns(userID int) ([]Campaign, error)
-
+	FindCampaignsByuserId(UserID int) ([]Campaign, error)
+	FindCampaignByid(ID int) (Campaign, error)
 }
 
 
@@ -21,8 +21,9 @@ func NewService(NewRepository Repository) *service {
 }
 
 
-func (s * service) FindCampaigns(userID int)([]Campaign, error){
-	if userID == 0{
+func (s * service) FindCampaignsByuserId(UserID int)([]Campaign, error){
+	var campaign []Campaign
+	if UserID ==0{
 		
 	campaigns, err := s.repository.FindAll()
 	if err != nil{
@@ -31,14 +32,27 @@ func (s * service) FindCampaigns(userID int)([]Campaign, error){
 		
 	return campaigns,nil	
 	}
-	
-	
-	
-	campaigns, err := s.repository.FindByUserID(userID)
+	campaign, err := s.repository.FindByUserID(UserID)
 	if err !=nil{
-		return campaigns,errors.New("error")
+		return campaign,errors.New("error")
 	}
 
-	return campaigns,nil	
+	return campaign,nil	
 	}
+
+
+func (s * service) FindCampaignByid(ID int)(Campaign, error){
+	var campaign Campaign
+		
+	campaign, err := s.repository.FindByID(ID)
+	if err != nil{
+		return campaign, err
+		}
+		
+	return campaign,nil	
+	}
+	
+	
+	
+
 	

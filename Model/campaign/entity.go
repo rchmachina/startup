@@ -1,12 +1,13 @@
-package campaign
+package Models
 
 
-import "time"
+import ("time"
+		"campaign/Model/user")
 
 
 type Campaign struct{
 	ID					int 		`json:"id" gorm:"AUTO_INCREMENT;PRIMARY_KEY;not null"`
-	UserID 				int			`json:"userid"`
+	UserID 				int			`json:"userid" binding:"required" form:"userid"`
 	Name				string		`json:"name" gorm:"type:varchar(100)"`
 	ShortDescription	string		`json:"short_description" gorm:"type:varchar(100)"`
 	Description			string		`json:"long_description" gorm:"type:varchar(200)"`
@@ -19,6 +20,8 @@ type Campaign struct{
 	CreatedAt			time.Time 	
 	UpdatedAt			time.Time 	
 	CampaignImage		[]CampaignImage 
+	User				Models.User
+	
 }
 
 type CampaignImage struct{
