@@ -40,7 +40,7 @@ func main(){
 	//userService.SaveAvatar(4,"image/1")
 	authservice := auth.NewService()
 	
-	fmt.Println(authservice.GenerateToken(10))
+	fmt.Println(authservice.GenerateToken(33))
 
 	//database.MigrateCampaign()
 

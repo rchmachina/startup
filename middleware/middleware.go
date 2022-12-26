@@ -55,7 +55,7 @@ func AuthMiddleware(authService auth.Service, userRepository Models.Repository) 
 			c.AbortWithStatusJSON(http.StatusUnauthorized, response)
 			return
 		}
-		c.Set("current user", user)
+		c.Set("Current_User", user)
 	}
 
 

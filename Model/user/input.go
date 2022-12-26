@@ -7,7 +7,6 @@ type RegisterUserInput struct {
 	Occupation     string `json:"occupation" binding:"required" form:"occupation"`
 	Email          string `json:"email" binding:"required" form:"email"`
 	Password       string `json:"password" binding:"required" form:"password"`
-	AvatarFileName string
 	Token          string
 }
 

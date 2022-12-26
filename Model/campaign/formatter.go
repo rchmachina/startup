@@ -16,6 +16,7 @@ type CampaignFormatter struct{
 	CurrentAmount		int		`json:"current_ammount"`
 	Slug				string	`json:"slug"`
 	
+	
 }
 
 

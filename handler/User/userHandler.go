@@ -148,9 +148,9 @@ func (h *userHandler) ChangeAvatar(c *gin.Context) {
 	inputAvatar, err := h.userService.ChangeAvatar(input.ID, path)
 	if err != nil {
 		errorsMessage := gin.H{"errors": err.Error()}
-		//
 		c.JSON(http.StatusBadRequest, helper.APIResponse("fail", http.StatusBadRequest, "not updated", errorsMessage))
 		return
+		//
 	}
 	
 
@@ -166,13 +166,8 @@ func (h *userHandler) ChangeAvatar(c *gin.Context) {
 	fmt.Println(input.Token)
 	//fmt.Println(tokenString)
 	if input.Token != tokenString {
-
-		
 		c.JSON(http.StatusBadRequest, helper.APIResponse("fail", http.StatusBadRequest, "unauthorizer", "err"))
 		return
-
-		
-
 	}
 
 
@@ -181,3 +176,4 @@ func (h *userHandler) ChangeAvatar(c *gin.Context) {
 	response := helper.APIResponse("Image updated", http.StatusOK, IDstring, inputAvatar)
 	c.JSON(http.StatusOK, response)
 }
+
