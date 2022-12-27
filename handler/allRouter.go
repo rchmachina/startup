@@ -34,11 +34,6 @@ var (
 )
 
 
-
-
-
-
-
 func RouterV1(){
 
 	
@@ -49,7 +44,7 @@ func RouterV1(){
 	api.GET("/", test)
 	api.GET("/login", login)
 	api.GET("/campaignsdetail", campaignhandler.FindCampaignsByuserId)
-	api.GET("/campaignsdetail/:id", campaignhandler.FindCampaignByid)
+	api.GET("/campaignsdetail/:id", campaignhandler.FindCampaignsByuserId)
 	api.POST("/CreateCampaign", middleware.AuthMiddleware(auth.NewService(),userRepository),campaignhandler.Createcampaign)
 	api.POST("/Loginuser", Userhandler.Login)
 	api.POST("/user",Userhandler.RegisterUser)

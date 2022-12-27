@@ -21,6 +21,7 @@ type Campaign struct{
 	UpdatedAt			time.Time 	
 	CampaignImage		[]CampaignImage 
 	User				Models.User
+
 	
 }
 

@@ -1,8 +1,8 @@
 package Models
 
 import (
-	
 	"errors"
+	"fmt"
 
 	"github.com/gosimple/slug"
 )
@@ -10,7 +10,6 @@ import (
 
 type Service interface{
 	FindCampaignsByuserId(UserID int) ([]Campaign, error)
-	FindCampaignByid(ID int) (Campaign, error)
 	CreateCampaign(input CreateCampaign) (Campaign, error)
 
 }
@@ -47,16 +46,6 @@ func (s * service) FindCampaignsByuserId(UserID int)([]Campaign, error){
 	}
 
 
-func (s * service) FindCampaignByid(ID int)(Campaign, error){
-	var campaign Campaign
-		
-	campaign, err := s.repository.FindByID(ID)
-	if err != nil{
-		return campaign, err
-		}
-		
-	return campaign,nil	
-	}
 	
 	
 
@@ -78,7 +67,9 @@ func (s *service) CreateCampaign(input CreateCampaign) (Campaign, error) {
 	campaign.Description = input.Description
 	campaign.GoalAmount = input.GoalAmount
 	campaign.UserID = int(input.User.ID)
-	campaign.Slug = slug.Make(input.Name )
+	campaign.Perks = input.Perks
+	varslug := fmt.Sprintf("%s+%d", campaign.Name, campaign.UserID)
+	campaign.Slug = slug.Make(varslug)
 	NewCampaign, err := s.repository.Save(campaign)
 	if err != nil{
 		return NewCampaign,err

@@ -18,5 +18,7 @@ type CreateCampaign struct{
 	Perks				string		`json:"perks" gorm:"type:varchar(100)" binding:"required"  form:"perks"`
 	GoalAmount			int			`json:"goal_ammount" binding:"required"  form:"goal_ammount" gorm:"type:int(200)"`
 	User				Models.User 
+	
+
 }
 
