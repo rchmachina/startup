@@ -1,14 +1,17 @@
 package Models
 
 import "gorm.io/gorm"
+		
+
 
 type Repository interface{
 	//Create(user User) (User, error)
 	FindAll() ([]Campaign,error )
 	FindByUserID (userID int)([]Campaign,error)
-	
+	Update(campaign Campaign)(Campaign, error)
 	Save(campaign Campaign)	(Campaign, error)
 	CheckName(name string)(Campaign, error)
+	FindByID (ID int)(Campaign,error)
 }
 type repository struct{
 	db  *gorm.DB 
@@ -51,11 +54,31 @@ func (r *repository) FindByUserID(userID int)([]Campaign,error){
 	return campaigns ,nil
 
 }
+func (r *repository) FindByID(ID int)(Campaign,error){
+	var campaigns Campaign
+	err := r.db.Preload("User").Preload("CampaignImage").Where("id = ?",ID).Find(&campaigns).Error
+	if err!= nil{
+		return campaigns, err
+	}
+	
 
+	return campaigns ,nil
+
+}
 
 
 
 func (r *repository) Save(campaign Campaign) (Campaign,error){
+	err := r.db.Create(&campaign).Error
+	if err !=nil{
+		return campaign, err
+	}
+	return campaign, nil
+}
+
+
+
+func (r *repository) Update(campaign Campaign) (Campaign,error){
 	err := r.db.Save(&campaign).Error
 	if err !=nil{
 		return campaign, err

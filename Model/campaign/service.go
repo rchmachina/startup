@@ -9,8 +9,12 @@ import (
 
 
 type Service interface{
-	FindCampaignsByuserId(UserID int) ([]Campaign, error)
+	FindCampaignsByUserId(UserID int) ([]Campaign, error)
 	CreateCampaign(input CreateCampaign) (Campaign, error)
+	Updatecampaign (inputID GetCampaignByID, input CreateCampaign) (Campaign, error)
+	FindById(ID GetCampaignByID)(Campaign, error)
+	
+	
 
 }
 
@@ -26,18 +30,28 @@ func NewService(NewRepository Repository) *service {
 
 
 
-func (s * service) FindCampaignsByuserId(UserID int)([]Campaign, error){
-	var campaign []Campaign
-	if UserID ==0{
-		
-	campaigns, err := s.repository.FindAll()
-	if err != nil{
-		return campaigns, err
+func (s * service) FindCampaignsByUserId(UserID int)([]Campaign, error){
+	if UserID != 0{
+		campaign, err := s.repository.FindByUserID(UserID)
+		if err !=nil{
+			return campaign,errors.New("error")
 		}
-		
-	return campaigns,nil	
+		return campaign,nil	
+	
 	}
-	campaign, err := s.repository.FindByUserID(UserID)
+	campaign, err := s.repository.FindAll()
+	if err != nil{
+		return campaign, err
+	}
+	return  campaign,nil
+	}	
+
+	
+
+func (s * service) FindById(ID GetCampaignByID)(Campaign, error){
+	var campaign Campaign
+
+	campaign, err := s.repository.FindByID(ID.ID)
 	if err !=nil{
 		return campaign,errors.New("error")
 	}
@@ -45,6 +59,31 @@ func (s * service) FindCampaignsByuserId(UserID int)([]Campaign, error){
 	return campaign,nil	
 	}
 
+
+func (s * service) Updatecampaign(inputID GetCampaignByID, input CreateCampaign)(Campaign, error){
+	var campaign Campaign
+	campaign, err := s.repository.FindByID(inputID.ID)
+	if err !=nil{
+		return campaign ,errors.New("data tidak ditemukan")
+	}
+	campaign.ID = inputID.ID
+	campaign.ShortDescription = input.ShortDescription
+	campaign.Description = input.Description
+	campaign.GoalAmount = input.GoalAmount
+	campaign.Name = input.Name
+
+	campaign.Perks = input.Perks
+
+	UpdatedCampaign, err := s.repository.Update(campaign)
+	if err!= nil{
+		return campaign, errors.New("there something wrong")
+	}
+	return UpdatedCampaign,nil	
+
+
+
+
+	}
 
 	
 	
