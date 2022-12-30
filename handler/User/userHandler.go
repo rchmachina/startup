@@ -134,13 +134,15 @@ func (h *userHandler) ChangeAvatar(c *gin.Context) {
 
 
 	file, err := c.FormFile("avatar")
-
+	
 	if err != nil {
 		errorsMessage := gin.H{"errors": err.Error()}
 		c.JSON(http.StatusBadRequest, helper.APIResponse("fail", http.StatusBadRequest, "please upload file", errorsMessage))
 		return
 
 	}
+
+
 	var path string = fmt.Sprintf("images/" + file.Filename)
 	pathformater := helper.Formaterword(path)
 	c.SaveUploadedFile(file, pathformater)

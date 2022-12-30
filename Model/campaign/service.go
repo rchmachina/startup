@@ -11,10 +11,10 @@ import (
 type Service interface{
 	FindCampaignsByUserId(UserID int) ([]Campaign, error)
 	CreateCampaign(input CreateCampaign) (Campaign, error)
-	Updatecampaign (inputID GetCampaignByID, input CreateCampaign) (Campaign, error)
-	FindById(ID GetCampaignByID)(Campaign, error)
-	
-	
+	Updatecampaign (inputID int, input CreateCampaign) (Campaign, error)
+	FindById(ID int)(Campaign, error)
+	UploadCampaignImagePrimary(input CampaignImage) (Campaign, error)
+	DeleteCampaign(input int )(error)
 
 }
 
@@ -27,31 +27,40 @@ type service struct{
 func NewService(NewRepository Repository) *service {
 	return &service{NewRepository}
 }
-
+func (s * service)DeleteCampaign(input int )(error){
+	err := s.repository.DeleteCampaign(input)
+	if err != nil{
+		return err
+	}
+	return nil
+}
 
 
 func (s * service) FindCampaignsByUserId(UserID int)([]Campaign, error){
-	if UserID != 0{
-		campaign, err := s.repository.FindByUserID(UserID)
-		if err !=nil{
-			return campaign,errors.New("error")
+	if UserID == 0{
+
+
+		campaign, err := s.repository.FindAll()
+		if err != nil{
+			return campaign, err
 		}
-		return campaign,nil	
-	
+		return  campaign,nil
+
 	}
-	campaign, err := s.repository.FindAll()
-	if err != nil{
-		return campaign, err
+	campaign, err := s.repository.FindByUserID(UserID)
+	if err !=nil{
+		return campaign,errors.New("error")
 	}
-	return  campaign,nil
+	return campaign,nil	
+
 	}	
 
 	
 
-func (s * service) FindById(ID GetCampaignByID)(Campaign, error){
+func (s * service) FindById(ID int)(Campaign, error){
 	var campaign Campaign
 
-	campaign, err := s.repository.FindByID(ID.ID)
+	campaign, err := s.repository.FindByID(ID)
 	if err !=nil{
 		return campaign,errors.New("error")
 	}
@@ -60,13 +69,13 @@ func (s * service) FindById(ID GetCampaignByID)(Campaign, error){
 	}
 
 
-func (s * service) Updatecampaign(inputID GetCampaignByID, input CreateCampaign)(Campaign, error){
+func (s * service) Updatecampaign(inputID int, input CreateCampaign)(Campaign, error){
 	var campaign Campaign
-	campaign, err := s.repository.FindByID(inputID.ID)
+	campaign, err := s.repository.FindByID(inputID)
 	if err !=nil{
 		return campaign ,errors.New("data tidak ditemukan")
 	}
-	campaign.ID = inputID.ID
+	campaign.ID = inputID
 	campaign.ShortDescription = input.ShortDescription
 	campaign.Description = input.Description
 	campaign.GoalAmount = input.GoalAmount
@@ -116,3 +125,9 @@ func (s *service) CreateCampaign(input CreateCampaign) (Campaign, error) {
 	return NewCampaign,nil
 
 } 
+
+func (s *service) UploadCampaignImagePrimary(input CampaignImage) (Campaign, error){
+
+
+	return Campaign{},errors.New("t")
+}

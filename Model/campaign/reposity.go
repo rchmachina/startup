@@ -1,6 +1,10 @@
 package Models
 
-import "gorm.io/gorm"
+import (
+	"errors"
+
+	"gorm.io/gorm"
+)
 		
 
 
@@ -11,7 +15,10 @@ type Repository interface{
 	Update(campaign Campaign)(Campaign, error)
 	Save(campaign Campaign)	(Campaign, error)
 	CheckName(name string)(Campaign, error)
+	checkImage(campaignID int)([]CampaignImage,error)
 	FindByID (ID int)(Campaign,error)
+	CreateImage (campaign_image CampaignImage)(CampaignImage,error)
+	DeleteCampaign (ID int)(error)
 }
 type repository struct{
 	db  *gorm.DB 
@@ -21,6 +28,28 @@ type repository struct{
 func NewRepository(db *gorm.DB) *repository{
 	return &repository{db}
 }
+func (r*repository) DeleteCampaign (ID int)(error){
+
+	err := r.db.Delete(&Campaign{}, ID).Error
+	if err !=nil{
+		return errors.New("there is no data in here ")
+	}
+	
+	return nil
+
+}
+
+
+
+func (r*repository) CreateImage (campaign_image CampaignImage)(CampaignImage,error){
+	err := r.db.Create(&campaign_image).Error
+	if err !=nil{
+		return campaign_image, err
+	}
+	return campaign_image, nil
+}
+
+
 
 func (r *repository) FindAll()([]Campaign,error){
 	var campaigns []Campaign
@@ -42,6 +71,19 @@ func (r *repository) CheckName(name string)(Campaign, error){
 	return campaign, nil
 
 } 
+
+
+
+func (r *repository) checkImage(campaignID int)([]CampaignImage,error){
+	var CampaignImage []CampaignImage
+	err := r.db.Where("campaign_id = ?",campaignID).Find(&CampaignImage).Error
+	if err !=nil{
+		return CampaignImage,err
+	}
+	return CampaignImage, nil
+
+} 
+
 
 func (r *repository) FindByUserID(userID int)([]Campaign,error){
 	var campaigns []Campaign

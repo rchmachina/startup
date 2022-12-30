@@ -4,9 +4,10 @@ import (
 	database "campaign/DB"
 
 
-	"fmt"
+
+	
 	//
-	auth "campaign/auth"
+
 
 	handler "campaign/handler"
 )
@@ -38,9 +39,10 @@ func main(){
 	//controller.MigrateUser()
 	//controller.Adduser()
 	//userService.SaveAvatar(4,"image/1")
-	authservice := auth.NewService()
+	db.AutoMigrate()
 	
-	fmt.Println(authservice.GenerateToken(33))
+
+	
 
 	//database.MigrateCampaign()
 
@@ -58,23 +60,6 @@ func main(){
 	// }
 
 	handler.RouterV1()
-	// db := controller.Connect()
-	// userRepository := models.NewRepository(db)
-	// userService := models.NewService(userRepository)
-	// //AddUserhandler := Handler.NewUserHandler(userService)
-
-	// input := models.LoginInput{
-	// 	Email : "rachlevi",
-	// 	Password :"password",
-	// }
-
-	// User, err := userService.Login(input)
-	// 	if err != nil{	
-	// fmt.Print(err.Error())
-	// }
-	// fmt.Print(User.Email)
-	// fmt.Print(User.Name)
-
 	
 
 }

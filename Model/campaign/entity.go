@@ -2,7 +2,7 @@ package Models
 
 
 import ("time"
-		"campaign/Model/user")
+		Models "campaign/Model/user")
 
 
 type Campaign struct{
@@ -19,17 +19,17 @@ type Campaign struct{
 	ImageUrl			string		`json:"image_url" gorm:"type:varchar(100)"`
 	CreatedAt			time.Time 	
 	UpdatedAt			time.Time 	
-	CampaignImage		[]CampaignImage 
+	CampaignImage		[]CampaignImage `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	User				Models.User
 
 	
 }
 
 type CampaignImage struct{
-	ID 				int 
-	CampaignID	 	int
-	FileName 		string
-	IsPrimary		int
+	ID 				int `json:"id" gorm:"AUTO_INCREMENT;PRIMARY_KEY;not null"`
+	CampaignID	 	int `json:"userid" binding:"required" form:"CampaignId"`
+	FileName 		string	
+	IsPrimary		int	`json:"primaryfile" form:"isprimary"`
 	CreatedAt		time.Time
 	UpdatedAt		time.Time
 }
